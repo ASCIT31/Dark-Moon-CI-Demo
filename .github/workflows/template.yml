@@ -49,7 +49,7 @@ jobs:
         if: always()
         run: |
           mkdir -p reports
-          docker cp opencode:/root/.local/share/opencode/reports/. reports/ 2>/dev/null || true
+          docker cp opencode:/mnt/darkmoon-share/reports/. reports/ 2>/dev/null || true
           ls -la reports/ || true
 
       - name: Upload reports
