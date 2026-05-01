@@ -49,7 +49,7 @@ jobs:
         if: always()
         run: |
           mkdir -p reports
-          for f in $(docker exec opencode bash -c "ls /root/.local/share/opencode/reports/*.md 2>/dev/null"); do
+          for f in $(docker exec opencode bash -c "ls /opt/darkmoon/mcp/server/data/reports/*.md 2>/dev/null"); do
             docker exec opencode cat "$f" > "reports/$(basename $f)"
           done
           ls -la reports/ || true
