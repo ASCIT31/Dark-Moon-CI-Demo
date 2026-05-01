@@ -48,7 +48,7 @@ jobs:
       - name: Collect reports from container
         if: always()
         run: |
-          mkdir -p reports
+          rm -rf reports && mkdir -p reports
           for f in $(docker exec opencode bash -c "ls /opt/darkmoon/mcp/server/data/reports/*.md 2>/dev/null"); do
             docker exec opencode cat "$f" > "reports/$(basename $f)"
           done
