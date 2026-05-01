@@ -1,0 +1,22 @@
+name: darkmoon
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Target (e.g. TARGET: 172.18.0.3)"
+        required: true
+        default: "TARGET: 172.18.0.3"
+
+jobs:
+  run-darkmoon:
+    uses: ./.github/workflows/template.yml
+    with:
+      prompt: ${{ inputs.prompt }}
+    secrets:
+      DARKMOON_LICENSE_KEY: ${{ secrets.DARKMOON_LICENSE_KEY }}
+      OPENROUTER_PROVIDER: ${{ secrets.OPENROUTER_PROVIDER }}
+      OPENCODE_MODEL: ${{ secrets.OPENCODE_MODEL }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

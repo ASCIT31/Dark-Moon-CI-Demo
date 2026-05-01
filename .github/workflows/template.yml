@@ -1,0 +1,60 @@
+name: darkmoon-template
+
+on:
+  workflow_call:
+    inputs:
+      prompt:
+        description: "Target (e.g. TARGET: 172.18.0.3)"
+        required: true
+        type: string
+
+    secrets:
+      DARKMOON_LICENSE_KEY:
+        required: true
+      OPENROUTER_PROVIDER:
+        required: true
+      OPENCODE_MODEL:
+        required: true
+      OPENROUTER_API_KEY:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+
+jobs:
+  darkmoon-headless:
+    runs-on: darkmoon-runner-demo
+
+    steps:
+      - name: Login Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Download & install Darkmoon
+        run: |
+          curl -fsSL https://client.dark-moon.org/install.sh -o install.sh
+          chmod +x install.sh
+          ./install.sh "${{ secrets.DARKMOON_LICENSE_KEY }}" \
+            --provider "${{ secrets.OPENROUTER_PROVIDER }}" \
+            --model "${{ secrets.OPENCODE_MODEL }}" \
+            --api-key "${{ secrets.OPENROUTER_API_KEY }}"
+
+      - name: Run pentest
+        run: |
+          echo "[CI] Darkmoon pentest in progress..."
+          ./darkmoon.sh run --agent pentest "${{ inputs.prompt }}"
+
+      - name: Collect reports from container
+        if: always()
+        run: |
+          mkdir -p reports
+          docker cp opencode:/root/.local/share/opencode/reports/. reports/ 2>/dev/null || true
+          ls -la reports/ || true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: darkmoon-reports-${{ github.run_id }}
+          path: reports/
