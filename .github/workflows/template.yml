@@ -49,22 +49,9 @@ jobs:
         if: always()
         run: |
           mkdir -p reports
-          # Resolve real host path of the reports bind mount (Docker Desktop WSL)
-          REPORTS_HOST=$(docker inspect opencode 2>/dev/null | python3 -c "
-import sys,json
-c=json.load(sys.stdin)[0]
-for m in c['Mounts']:
-    if m.get('Destination') == '/mnt/darkmoon-share/reports':
-        print(m['Source'].replace('/run/desktop/mnt/host/wsl', '/mnt/wsl'))
-        break
-" 2>/dev/null)
-          if [ -n "$REPORTS_HOST" ] && [ -d "$REPORTS_HOST" ]; then
-            cp -r "$REPORTS_HOST"/. reports/ 2>/dev/null || true
-          fi
-          # Fallback: docker cp
-          if [ -z "$(ls -A reports/ 2>/dev/null)" ]; then
-            docker cp opencode:/mnt/darkmoon-share/reports/. reports/ 2>/dev/null || true
-          fi
+          for f in $(docker exec opencode bash -c "ls /root/.local/share/opencode/reports/*.md 2>/dev/null"); do
+            docker exec opencode cat "$f" > "reports/$(basename $f)"
+          done
           ls -la reports/ || true
 
       - name: Upload reports
