@@ -1,3 +1,17 @@
+<div align="center">
+
+# DarkMoon, the open-source AI penetration testing platform
+
+**50 specialist AI agents. Real exploits chained across web, cloud, Active Directory and Kubernetes. Proof for every finding. Self-hosted, and the model never sees your real IPs, hosts or credentials.**
+
+[![GitHub stars](https://img.shields.io/github/stars/ASCIT31/Dark-Moon?style=social&label=Star)](https://github.com/ASCIT31/Dark-Moon)
+
+[**⭐ Star DarkMoon**](https://github.com/ASCIT31/Dark-Moon) · [**▶️ Watch the 60s demo**](https://youtu.be/1bFRVuMkZzY?si=peKxwuxzbXBnb2zO) · [**Main repo**](https://github.com/ASCIT31/Dark-Moon)
+
+</div>
+
+---
+
 # Dark Moon CI — Automated Pentest Pipeline
 
 > Autonomous black-box penetration testing triggered by GitHub Actions.  
