@@ -7,12 +7,30 @@ on:
         description: "Target (e.g. TARGET: 172.18.0.3)"
         required: true
         default: "TARGET: 172.18.0.3"
+      remediate:
+        description: "Open fix pull requests after the pentest"
+        required: false
+        default: false
+        type: boolean
+      remediation_repo:
+        description: "Git repo (URL) whose source the target was built from"
+        required: false
+        default: ""
+        type: string
+      remediation_provider:
+        description: "SCM provider (github|gitlab|gitea|gogs|bitbucket|azure_devops)"
+        required: false
+        default: "github"
+        type: string
 
 jobs:
   run-darkmoon:
     uses: ./.github/workflows/template.yml
     with:
       prompt: ${{ inputs.prompt }}
+      remediate: ${{ inputs.remediate }}
+      remediation_repo: ${{ inputs.remediation_repo }}
+      remediation_provider: ${{ inputs.remediation_provider }}
     secrets:
       DARKMOON_LICENSE_KEY: ${{ secrets.DARKMOON_LICENSE_KEY }}
       OPENROUTER_PROVIDER: ${{ secrets.OPENROUTER_PROVIDER }}
@@ -20,3 +38,4 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      REMEDIATION_SCM_TOKEN: ${{ secrets.REMEDIATION_SCM_TOKEN }}

@@ -7,6 +7,21 @@ on:
         description: "Target (e.g. TARGET: 172.18.0.3)"
         required: true
         type: string
+      remediate:
+        description: "Open fix pull requests for the findings after the pentest"
+        required: false
+        default: false
+        type: boolean
+      remediation_repo:
+        description: "Git repo (URL) whose source the target was built from"
+        required: false
+        default: ""
+        type: string
+      remediation_provider:
+        description: "SCM provider (github|gitlab|gitea|gogs|bitbucket|azure_devops)"
+        required: false
+        default: "github"
+        type: string
 
     secrets:
       DARKMOON_LICENSE_KEY:
@@ -21,6 +36,8 @@ on:
         required: true
       DOCKERHUB_TOKEN:
         required: true
+      REMEDIATION_SCM_TOKEN:
+        required: false
 
 jobs:
   darkmoon-headless:
@@ -44,6 +61,34 @@ jobs:
         run: |
           echo "[CI] Darkmoon pentest in progress..."
           ./darkmoon.sh run --agent pentest "${{ inputs.prompt }}"
+
+      - name: Remediate findings (open fix pull requests)
+        if: ${{ inputs.remediate && inputs.remediation_repo != '' }}
+        run: |
+          echo "[CI] Darkmoon remediation — validating fixes in a sandbox and opening PRs..."
+          # The remediation pipeline runs inside the opencode container: it reads
+          # the campaign findings from the local dashboard API, reproduces each
+          # exploit in an ephemeral sandbox, generates + re-tests a minimal fix on
+          # the SAME LLM provider the pentest used, and opens a pull request for
+          # human review. The push token is passed via env and never logged.
+          docker exec \
+            -e DARKMOON_SCM_TOKEN="${{ secrets.REMEDIATION_SCM_TOKEN }}" \
+            -e OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
+            -e OPENCODE_MODEL="${{ secrets.OPENCODE_MODEL }}" \
+            -e OPENROUTER_PROVIDER="${{ secrets.OPENROUTER_PROVIDER }}" \
+            opencode bash -lc "cd /opt/darkmoon/mcp/server && python -m src.remediation \
+              --latest-campaign --api-base http://127.0.0.1:8000/api/v1 \
+              --repo '${{ inputs.remediation_repo }}' \
+              --provider '${{ inputs.remediation_provider }}' \
+              --min-confidence 0.7 --no-link" | tee remediation-summary.json || true
+          echo "--- remediation summary ---"; cat remediation-summary.json || true
+
+      - name: Upload remediation summary
+        if: ${{ inputs.remediate && inputs.remediation_repo != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: darkmoon-remediation-${{ github.run_id }}
+          path: remediation-summary.json
 
       - name: Collect reports from container
         if: always()
