@@ -65,12 +65,9 @@ jobs:
       - name: Remediate findings (open fix pull requests)
         if: ${{ inputs.remediate && inputs.remediation_repo != '' }}
         run: |
-          echo "[CI] Darkmoon remediation — validating fixes in a sandbox and opening PRs..."
-          # The remediation pipeline runs inside the opencode container: it reads
-          # the campaign findings from the local dashboard API, reproduces each
-          # exploit in an ephemeral sandbox, generates + re-tests a minimal fix on
-          # the SAME LLM provider the pentest used, and opens a pull request for
-          # human review. The push token is passed via env and never logged.
+          echo "[CI] Darkmoon remediation — opening fix pull requests for review..."
+          # Invokes the installed Darkmoon product's remediation command. The push
+          # token is provided via env and is never printed.
           docker exec \
             -e DARKMOON_SCM_TOKEN="${{ secrets.REMEDIATION_SCM_TOKEN }}" \
             -e OPENROUTER_API_KEY="${{ secrets.OPENROUTER_API_KEY }}" \
