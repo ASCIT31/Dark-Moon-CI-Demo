@@ -10,6 +10,11 @@
 
 </div>
 
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0A2472)](LICENSING.md)
+
+> [!IMPORTANT]
+> **License change.** This repository is licensed under the GNU AGPL v3.0 since 20 November 2026 (commits up to `4b606b3` had no licence file). Darkmoon Community is moving to the GNU AGPL v3.0 too (its commits up to `edfe9cb`, 27 October 2026, and earlier outside contributions stay GPL v3.0). Details: [LICENSING.md](LICENSING.md) · [Darkmoon LICENSING.md](https://github.com/ASCIT31/Dark-Moon/blob/master/LICENSING.md).
+
 ---
 
 # Dark Moon CI — Automated Pentest Pipeline
@@ -361,6 +366,12 @@ After each run, a **darkmoon-reports** artifact is uploaded containing:
 - **License isolation:** `.darkmoon-license.env` and `.opencode.env` are generated at runtime, never committed
 - **Runner isolation:** Use a dedicated runner machine. Do not share runners between sensitive projects
 - **Network:** The `opencode` container runs on a bridge network (`darkmoon-stack_default`). For local model inference, ensure the inference server is on the same Docker network
+
+---
+
+## License
+
+This repository is licensed under the GNU AGPL v3.0 (AGPL-3.0-only), see [LICENSE](LICENSE) and [LICENSING.md](LICENSING.md). Commits up to `4b606b3` had no licence file. Darkmoon itself is AGPL-3.0, see its [LICENSING.md](https://github.com/ASCIT31/Dark-Moon/blob/master/LICENSING.md).
 
 ---
 
